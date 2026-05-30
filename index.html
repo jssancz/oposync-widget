@@ -500,6 +500,8 @@ function renderCalendar() {
 async function loadData() {
   try {
     const url = `${SUPABASE_URL}/functions/v1/get_bloques`;
+    const dbg = document.getElementById('debug');
+    if (dbg) dbg.textContent = 'Llamando: ' + url;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -509,7 +511,12 @@ async function loadData() {
       body: JSON.stringify({ planner_id: PLANNER_ID })
     });
 
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const dbg2 = document.getElementById('debug');
+    if (dbg2) dbg2.textContent = 'Status: ' + res.status + ' ' + res.statusText;
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error('HTTP ' + res.status + ' — ' + txt);
+    }
 
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) throw new Error('Sin datos');
@@ -519,16 +526,29 @@ async function loadData() {
     renderCalendar();
 
   } catch (err) {
+    let detalle = err.message;
+    try {
+      const txt = await err?.response?.text?.();
+      if (txt) detalle += ' — ' + txt;
+    } catch(_) {}
     document.getElementById('calendar-container').innerHTML = `
       <div class="state-card">
         <div class="state-icon">⚠️</div>
         <div class="state-title">Error al cargar datos</div>
-        <div class="state-sub">${err.message}</div>
+        <div class="state-sub" style="word-break:break-all;font-size:12px;">${detalle}</div>
       </div>
     `;
     renderWeekTabs();
   }
 }
+
+// Debug: mostrar URL que se llama
+document.addEventListener('DOMContentLoaded', () => {
+  const dbg = document.createElement('div');
+  dbg.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#000;color:#0f0;font-size:11px;padding:4px 8px;z-index:9999;font-family:monospace;';
+  dbg.id = 'debug';
+  document.body.appendChild(dbg);
+});
 
 // Init
 renderWeekTabs();
