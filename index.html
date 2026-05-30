@@ -499,12 +499,14 @@ function renderCalendar() {
 
 async function loadData() {
   try {
-    const url = `${SUPABASE_URL}/rest/v1/bloques_planning?planner_id=eq.${PLANNER_ID}&select=*&order=fecha.asc,orden_en_dia.asc`;
+    const url = `${SUPABASE_URL}/functions/v1/get_bloques`;
     const res = await fetch(url, {
+      method: 'POST',
       headers: {
-        'apikey': SUPABASE_KEY,
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + SUPABASE_KEY,
-      }
+      },
+      body: JSON.stringify({ planner_id: PLANNER_ID })
     });
 
     if (!res.ok) throw new Error('HTTP ' + res.status);
