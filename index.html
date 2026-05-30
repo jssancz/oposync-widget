@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpoSync — Planning Junio 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --teal: #0D4B4B;
+    --teal-light: #1a6363;
+    --teal-dark: #082e2e;
+    --yellow: #D4E800;
+    --yellow-dark: #b8cc00;
+    --white: #ffffff;
+    --gray-50: #f8f9fa;
+    --gray-100: #f1f3f4;
+    --gray-200: #e8eaed;
+    --gray-400: #9aa0a6;
+    --gray-600: #5f6368;
+    --gray-800: #202124;
+
+    --estudio: #1B4332;
+    --clase: #1E3A5F;
+    --test-intensivo: #E76F00;
+    --test-completo: #C1121F;
+    --test-teoria: #6A0572;
+    --comodin: #4A5568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-800);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: var(--teal);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: var(--yellow);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: var(--teal);
+  }
+
+  .logo-text h1 { font-size: 16px; font-weight: 700; color: white; }
+  .logo-text p { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px;
+    color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .nav-item.active { background: rgba(255,255,255,0.15); color: white; }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .progress-card {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 14px;
+  }
+  .progress-card .label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .progress-card .value { font-size: 22px; font-weight: 700; color: var(--yellow); }
+  .progress-card .sub { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .page-title h2 { font-size: 28px; font-weight: 700; color: var(--gray-800); }
+  .page-title p { font-size: 14px; color: var(--gray-400); margin-top: 2px; }
+
+  .month-nav {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .month-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    border: 1px solid var(--gray-200); background: white;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--gray-600); transition: all 0.15s;
+  }
+  .month-btn:hover { background: var(--gray-100); }
+  .month-btn svg { width: 16px; height: 16px; }
+
+  .month-label {
+    padding: 8px 16px; background: var(--teal); color: white;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+  }
+
+  /* WEEK TABS */
+  .week-tabs {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .week-tab {
+    padding: 10px 20px; border-radius: 10px;
+    border: 1px solid var(--gray-200); background: white;
+    cursor: pointer; transition: all 0.15s;
+    text-align: center;
+  }
+  .week-tab:hover { border-color: var(--teal); }
+  .week-tab.active { background: var(--teal); border-color: var(--teal); color: white; }
+
+  .week-tab .week-name { font-size: 13px; font-weight: 600; }
+  .week-tab .week-range { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+  .week-tab.active .week-range { color: rgba(255,255,255,0.6); }
+
+  /* CALENDAR GRID */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .day-col {
+    background: white; border-radius: 12px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    min-width: 0;
+  }
+
+  .day-header {
+    padding: 12px; background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .day-number { font-size: 22px; font-weight: 700; color: var(--gray-800); line-height: 1; }
+  .day-name { font-size: 11px; color: var(--gray-400); margin-top: 2px; text-transform: capitalize; }
+
+  .day-header.today { background: var(--teal); }
+  .day-header.today .day-number { color: white; }
+  .day-header.today .day-name { color: rgba(255,255,255,0.6); }
+
+  .day-blocks { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+
+  .block {
+    border-radius: 8px; padding: 8px 10px; cursor: default;
+    transition: transform 0.1s, box-shadow 0.1s;
+    position: relative; overflow: hidden;
+  }
+  .block:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+  .block-name {
+    font-size: 11px; font-weight: 600; color: white;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .block-hours {
+    font-size: 10px; color: rgba(255,255,255,0.75);
+    margin-top: 3px; font-family: 'DM Mono', monospace;
+  }
+
+  /* BLOCK COLORS */
+  .block-estudio { background: var(--estudio); }
+  .block-clase { background: var(--clase); }
+  .block-test_especifico_intensivo { background: var(--test-intensivo); }
+  .block-test_global_completo { background: var(--test-completo); }
+  .block-test_global_teoria { background: var(--test-teoria); }
+  .block-comodin { background: var(--comodin); }
+  .block-simulacro { background: #2D6A4F; }
+  .block-clase_diferido { background: #2C4A7C; }
+
+  /* LEGEND */
+  .legend {
+    background: white; border-radius: 12px; padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .legend h3 { font-size: 13px; font-weight: 600; color: var(--gray-600); margin-bottom: 14px; }
+  .legend-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 4px; flex-shrink: 0; }
+  .legend-label { font-size: 12px; color: var(--gray-600); }
+
+  /* LOADING / ERROR */
+  .state-card {
+    background: white; border-radius: 12px; padding: 60px;
+    text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .state-icon { font-size: 48px; margin-bottom: 16px; }
+  .state-title { font-size: 18px; font-weight: 600; color: var(--gray-800); }
+  .state-sub { font-size: 14px; color: var(--gray-400); margin-top: 6px; }
+
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--gray-200);
+    border-top-color: var(--teal); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EMPTY DAY */
+  .empty-day { padding: 12px 8px; text-align: center; }
+  .empty-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200); margin: 0 auto; }
+
+  /* WEEK SUMMARY */
+  .week-summary {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .summary-chip {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .summary-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1200px) {
+    .calendar-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .sidebar { width: 60px; }
+    .logo-text, .nav-item span, .sidebar-footer { display: none; }
+    .main { margin-left: 60px; padding: 16px; }
+    .calendar-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .no-data-week {
+    grid-column: 1 / -1;
+    background: white; border-radius: 12px; padding: 40px;
+    text-align: center; color: var(--gray-400);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">O</div>
+    <div class="logo-text">
+      <h1>OpoSync</h1>
+      <p>Planning personal</p>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Calendario</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Asignaturas</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Estadísticas</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="progress-card">
+      <div class="label">Horas esta semana</div>
+      <div class="value" id="sidebar-hours">—</div>
+      <div class="sub">de 210h este mes</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div class="page-title">
+      <h2>Planning de Estudio</h2>
+      <p>Junio 2026 · Modo Intensivo</p>
+    </div>
+    <div class="month-nav">
+      <button class="month-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="month-label">Junio 2026</span>
+      <button class="month-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- WEEK TABS -->
+  <div class="week-tabs" id="week-tabs"></div>
+
+  <!-- WEEK SUMMARY -->
+  <div class="week-summary" id="week-summary"></div>
+
+  <!-- CALENDAR -->
+  <div id="calendar-container">
+    <div class="state-card">
+      <div class="spinner"></div>
+      <div class="state-title">Cargando tu planning...</div>
+      <div class="state-sub">Conectando con Supabase</div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend" style="margin-top: 20px;">
+    <h3>Tipos de bloque</h3>
+    <div class="legend-grid">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--estudio)"></div><span class="legend-label">Estudio</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--clase)"></div><span class="legend-label">Clase</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--test-intensivo)"></div><span class="legend-label">Test Intensivo</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--test-completo)"></div><span class="legend-label">Test Global Completo</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--test-teoria)"></div><span class="legend-label">Test Global Teoría</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--comodin)"></div><span class="legend-label">Comodín</span></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const SUPABASE_URL = 'https://jjgjfwmvgmnpejzeqsxl.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqZ2pmd212Z21ucGVqemVxc3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5OTEyNjMsImV4cCI6MjA5NTU2NzI2M30.l2f1IKO9Rf5Ku202Vb8fVqPK0bgh3K1ZhZzDlesFGKE';
+const PLANNER_ID = 'b683a009-9b6b-4395-993e-2bcf3f85218e';
+
+const WEEKS = [
+  { label: 'Semana 1', range: '1 – 7 Jun',  start: 1,  end: 7  },
+  { label: 'Semana 2', range: '8 – 14 Jun', start: 8,  end: 14 },
+  { label: 'Semana 3', range: '15 – 21 Jun',start: 15, end: 21 },
+  { label: 'Semana 4', range: '22 – 25 Jun',start: 22, end: 25 },
+];
+
+const DIAS_ES = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+
+let allBlocks = [];
+let activeWeek = 0;
+
+function formatHours(h) {
+  const hours = Math.floor(h);
+  const mins = Math.round((h - hours) * 60);
+  if (hours === 0) return `${mins} min`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}'`;
+}
+
+function getBlockColor(tipo) {
+  const map = {
+    estudio: 'var(--estudio)',
+    clase: 'var(--clase)',
+    clase_diferido: 'var(--clase)',
+    test_especifico_intensivo: 'var(--test-intensivo)',
+    test_global_completo: 'var(--test-completo)',
+    test_global_teoria: 'var(--test-teoria)',
+    test_global: 'var(--test-completo)',
+    comodin: 'var(--comodin)',
+    simulacro: 'var(--estudio)',
+  };
+  return map[tipo] || 'var(--comodin)';
+}
+
+function getTipoLabel(tipo) {
+  const map = {
+    estudio: 'Estudio',
+    clase: 'Clase',
+    clase_diferido: 'Clase (diferido)',
+    test_especifico_intensivo: 'Test Intensivo',
+    test_global_completo: 'Test Global',
+    test_global_teoria: 'Test Teoría',
+    test_global: 'Test Global',
+    comodin: 'Comodín',
+    simulacro: 'Simulacro',
+  };
+  return map[tipo] || tipo;
+}
+
+function renderWeekTabs() {
+  const container = document.getElementById('week-tabs');
+  container.innerHTML = WEEKS.map((w, i) => `
+    <div class="week-tab ${i === activeWeek ? 'active' : ''}" onclick="switchWeek(${i})">
+      <div class="week-name">${w.label}</div>
+      <div class="week-range">${w.range}</div>
+    </div>
+  `).join('');
+}
+
+function switchWeek(idx) {
+  activeWeek = idx;
+  renderWeekTabs();
+  renderCalendar();
+}
+
+function getWeekBlocks(weekIdx) {
+  const { start, end } = WEEKS[weekIdx];
+  return allBlocks.filter(b => {
+    const day = parseInt(b.fecha.split('-')[2]);
+    return day >= start && day <= end;
+  });
+}
+
+function renderCalendar() {
+  const blocks = getWeekBlocks(activeWeek);
+  const { start, end } = WEEKS[activeWeek];
+  const container = document.getElementById('calendar-container');
+  const summary = document.getElementById('week-summary');
+
+  // Total horas semana
+  const totalH = blocks.reduce((s, b) => s + parseFloat(b.horas_asignadas), 0);
+  document.getElementById('sidebar-hours').textContent = formatHours(totalH);
+
+  // Summary chips
+  const tipos = {};
+  blocks.forEach(b => {
+    const label = getTipoLabel(b.tipo);
+    if (!tipos[label]) tipos[label] = { horas: 0, color: getBlockColor(b.tipo) };
+    tipos[label].horas += parseFloat(b.horas_asignadas);
+  });
+  summary.innerHTML = Object.entries(tipos).map(([label, data]) => `
+    <div class="summary-chip" style="background:${data.color}22; color:${data.color}; border:1px solid ${data.color}44">
+      <div class="dot" style="background:${data.color}"></div>
+      ${label}: ${formatHours(data.horas)}
+    </div>
+  `).join('');
+
+  // Build grid
+  const grid = document.createElement('div');
+  grid.className = 'calendar-grid';
+
+  // Group by date
+  const byDate = {};
+  blocks.forEach(b => {
+    if (!byDate[b.fecha]) byDate[b.fecha] = [];
+    byDate[b.fecha].push(b);
+  });
+
+  // Generate all days in range
+  for (let d = start; d <= end; d++) {
+    const dateStr = `2026-06-${String(d).padStart(2,'0')}`;
+    const date = new Date(dateStr + 'T00:00:00');
+    const diaSemana = DIAS_ES[date.getDay()];
+    const dayBlocks = byDate[dateStr] || [];
+    const isToday = dateStr === new Date().toISOString().split('T')[0];
+
+    const col = document.createElement('div');
+    col.className = 'day-col';
+
+    const headerClass = isToday ? 'day-header today' : 'day-header';
+    col.innerHTML = `
+      <div class="${headerClass}">
+        <div class="day-number">${d}</div>
+        <div class="day-name">${diaSemana}</div>
+      </div>
+      <div class="day-blocks">
+        ${dayBlocks.length === 0
+          ? '<div class="empty-day"><div class="empty-dot"></div></div>'
+          : dayBlocks.map(b => `
+            <div class="block block-${b.tipo}" style="background:${getBlockColor(b.tipo)}" title="${b.asignatura} · ${getTipoLabel(b.tipo)} · ${formatHours(parseFloat(b.horas_asignadas))}">
+              <div class="block-name">${b.asignatura}</div>
+              <div class="block-hours">${formatHours(parseFloat(b.horas_asignadas))}</div>
+            </div>
+          `).join('')
+        }
+      </div>
+    `;
+    grid.appendChild(col);
+  }
+
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+async function loadData() {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/bloques_planning?planner_id=eq.${PLANNER_ID}&select=*&order=fecha.asc,orden_en_dia.asc`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+      }
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) throw new Error('Sin datos');
+
+    allBlocks = data;
+    renderWeekTabs();
+    renderCalendar();
+
+  } catch (err) {
+    document.getElementById('calendar-container').innerHTML = `
+      <div class="state-card">
+        <div class="state-icon">⚠️</div>
+        <div class="state-title">Error al cargar datos</div>
+        <div class="state-sub">${err.message}</div>
+      </div>
+    `;
+    renderWeekTabs();
+  }
+}
+
+// Init
+renderWeekTabs();
+loadData();
+</script>
+</body>
+</html>
